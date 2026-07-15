@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Moonlight Session 3.0 | Lunara Live at Muzigal Rooftop</title>
+  <meta name="description" content="Reserve your spot for Moonlight Session 3.0 — an unforgettable rooftop live music experience with Lunara." />
+
+  <!-- Google Fonts: Space Grotesk (display) + Inter (body) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+
+  <!-- Stylesheet -->
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <!-- =====================================================
+       BACKGROUND FX
+       Fixed layer that sits behind everything and renders the
+       floating glowing gradient blobs used throughout the site.
+       Purely decorative — aria-hidden so screen readers skip it.
+  ====================================================== -->
+  <div class="bg-fx" aria-hidden="true">
+    <div class="glow glow--purple"></div>
+    <div class="glow glow--cyan"></div>
+    <div class="glow glow--purple2"></div>
+  </div>
+
+  <!-- =====================================================
+       1. STICKY NAVIGATION
+  ====================================================== -->
+  <header class="navbar" id="navbar">
+    <div class="navbar__inner container">
+
+      <!-- Logo + event name -->
+      <a href="#home" class="navbar__brand">
+        <span class="navbar__logo" aria-hidden="true">
+          <!-- Simple placeholder logo: crescent moon mark -->
+          <svg width="28" height="28" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M18 3C12 3 7 8 7 14C7 20 12 25 18 25C13.5 22.5 10.5 18.5 10.5 14C10.5 9.5 13.5 5.5 18 3Z" fill="url(#moonGradient)"/>
+            <defs>
+              <linearGradient id="moonGradient" x1="7" y1="3" x2="18" y2="25" gradientUnits="userSpaceOnUse">
+                <stop stop-color="#9D7CFF"/>
+                <stop offset="1" stop-color="#00E5FF"/>
+              </linearGradient>
+            </defs>
+          </svg>
+        </span>
+        <span class="navbar__title">Moonlight Session <em>3.0</em></span>
+      </a>
+
+      <!-- Desktop nav links -->
+      <nav class="navbar__links" aria-label="Primary">
+        <a href="#home">Home</a>
+        <a href="#about">About</a>
+        <a href="#register">Register</a>
+        <a href="https://www.instagram.com/bandlunara" target="_blank" rel="noopener noreferrer">Instagram</a>
+      </nav>
+
+      <!-- Mobile hamburger toggle (JS-controlled) -->
+      <button class="navbar__toggle" id="navToggle" aria-label="Toggle menu" aria-expanded="false">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+
+    <!-- Mobile dropdown menu -->
+    <div class="navbar__mobile" id="navMobile">
+      <a href="#home">Home</a>
+      <a href="#about">About</a>
+      <a href="#register">Register</a>
+      <a href="https://www.instagram.com/bandlunara" target="_blank" rel="noopener noreferrer">Instagram</a>
+    </div>
+  </header>
+
+  <main>
+    <!-- =====================================================
+         2. HERO SECTION
+         Cinematic rooftop-at-night hero with parallax glow layers,
+         big headline, subheading and two CTA buttons.
+    ====================================================== -->
+    <section class="hero" id="home">
+      <!-- Parallax layers move at different speeds on scroll (see script.js) -->
+      <div class="hero__parallax" data-parallax="0.15" aria-hidden="true">
+        <div class="hero__stars"></div>
+      </div>
+      <div class="hero__parallax" data-parallax="0.3" aria-hidden="true">
+        <div class="hero__skyline"></div>
+      </div>
+
+      <div class="hero__content container reveal">
+        <p class="eyebrow">26 JULY &nbsp;•&nbsp; MUZIGAL BUILDING ROOFTOP</p>
+        <h1 class="hero__title">Moonlight Session <span class="text-gradient">3.0</span></h1>
+        <p class="hero__subtitle">
+          Experience an unforgettable evening of live music under the stars with <strong>Lunara</strong>.
+        </p>
+
+        <div class="hero__actions">
+          <a href="#register" class="btn btn--primary btn--glow">Reserve Your Spot</a>
+          <a href="https://www.instagram.com/bandlunara" target="_blank" rel="noopener noreferrer" class="btn btn--secondary">
+            Visit Instagram
+          </a>
+        </div>
+      </div>
+
+      <!-- Scroll cue -->
+      <div class="hero__scroll-cue" aria-hidden="true">
+        <span></span>
+      </div>
+    </section>
+
+    <!-- =====================================================
+         3. EVENT INFORMATION
+         Glassmorphism card summarizing all key event details.
+    ====================================================== -->
+    <section class="section" id="about">
+      <div class="container">
+        <div class="section__heading reveal">
+          <p class="eyebrow">The Show</p>
+          <h2>Everything You Need To Know</h2>
+        </div>
+
+        <div class="info-card glass reveal">
+          <div class="info-grid">
+
+            <div class="info-item">
+              <div class="info-item__icon" aria-hidden="true">📅</div>
+              <p class="info-item__label">Date</p>
+              <p class="info-item__value">26 July</p>
+            </div>
+
+            <div class="info-item">
+              <div class="info-item__icon" aria-hidden="true">🕕</div>
+              <p class="info-item__label">Time</p>
+              <p class="info-item__value">6 PM – 9 PM</p>
+            </div>
+
+            <div class="info-item">
+              <div class="info-item__icon" aria-hidden="true">📍</div>
+              <p class="info-item__label">Venue</p>
+              <p class="info-item__value">Muzigal Building Rooftop</p>
+            </div>
+
+            <div class="info-item">
+              <div class="info-item__icon" aria-hidden="true">🎤</div>
+              <p class="info-item__label">Band</p>
+              <p class="info-item__value">Lunara</p>
+            </div>
+
+            <div class="info-item">
+              <div class="info-item__icon" aria-hidden="true">📞</div>
+              <p class="info-item__label">Contact</p>
+              <p class="info-item__value">
+                <a href="tel:9502295888">9502295888</a>
+              </p>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- =====================================================
+         4. REGISTRATION SECTION
+         Floating glass card containing the booking form AND
+         the post-payment success screen (toggled via JS).
+    ====================================================== -->
+    <section class="section" id="register">
+      <div class="container">
+        <div class="section__heading reveal">
+          <p class="eyebrow">Book Now</p>
+          <h2>Reserve Your Spot</h2>
+          <p class="section__subtext">Limited seats. Secure yours before they're gone.</p>
+        </div>
+
+        <div class="register-card glass reveal">
+
+          <!-- ---------- REGISTRATION FORM (visible by default) ---------- -->
+          <form id="registrationForm" class="reg-form" novalidate>
+
+            <!-- Full Name -->
+            <div class="field">
+              <label for="fullName">Full Name</label>
+              <input type="text" id="fullName" name="fullName" placeholder="e.g. Aditi Sharma" autocomplete="name" required />
+              <span class="field__error" id="fullNameError"></span>
+            </div>
+
+            <!-- Email -->
+            <div class="field">
+              <label for="email">Email Address</label>
+              <input type="email" id="email" name="email" placeholder="e.g. aditi@email.com" autocomplete="email" required />
+              <span class="field__error" id="emailError"></span>
+            </div>
+
+            <!-- Phone -->
+            <div class="field">
+              <label for="phone">Phone Number</label>
+              <input type="tel" id="phone" name="phone" placeholder="e.g. 9876543210" autocomplete="tel" required />
+              <span class="field__error" id="phoneError"></span>
+            </div>
+
+            <!-- Number of Tickets -->
+            <div class="field">
+              <label for="tickets">Number of Tickets</label>
+              <select id="tickets" name="tickets" required>
+                <option value="1">1</option>
+                <option value="2">2</option>
+                <option value="3">3</option>
+                <option value="4">4</option>
+                <option value="5">5</option>
+              </select>
+            </div>
+
+            <!-- Price summary — values are injected/updated by script.js -->
+            <div class="price-summary">
+              <div class="price-summary__row">
+                <span>Ticket Price</span>
+                <span id="ticketPriceDisplay">₹ 0</span>
+              </div>
+              <div class="price-summary__row price-summary__row--total">
+                <span>Total Amount</span>
+                <span id="totalAmountDisplay">₹ 0</span>
+              </div>
+            </div>
+
+            <!-- Single CTA that kicks off the (future) Razorpay flow -->
+            <button type="submit" class="btn btn--primary btn--glow btn--full" id="payButton">
+              <span id="payButtonText">Pay &amp; Register</span>
+              <!-- Loading spinner, hidden by default, shown while "processing payment" -->
+              <span class="spinner" id="payButtonSpinner" hidden></span>
+            </button>
+
+            <p class="reg-form__note">
+              You will receive your invoice and QR ticket by email immediately after payment.
+            </p>
+          </form>
+
+          <!-- ---------- SUCCESS SCREEN (hidden until payment completes) ---------- -->
+          <div class="success-screen" id="successScreen" hidden>
+            <div class="success-screen__icon" aria-hidden="true">
+              <!-- Green checkmark icon -->
+              <svg width="72" height="72" viewBox="0 0 72 72" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="36" cy="36" r="34" fill="#16A34A" fill-opacity="0.15" stroke="#22C55E" stroke-width="2"/>
+                <path d="M22 37L31 46L50 26" stroke="#22C55E" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </div>
+            <h3>Booking Successful</h3>
+            <p>Thank you for booking Moonlight Session 3.0.</p>
+            <p>A confirmation email with your invoice and QR ticket has been sent.</p>
+            <p class="success-screen__cta-text">See you on July 26!</p>
+
+            <button type="button" class="btn btn--secondary" id="bookAnotherBtn">Book Another Ticket</button>
+          </div>
+
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- =====================================================
+       FOOTER
+  ====================================================== -->
+  <footer class="footer">
+    <div class="container footer__inner">
+      <div class="footer__brand">
+        <span class="navbar__title">Moonlight Session <em>3.0</em></span>
+        <p>Live music, rooftop nights, curated by Lunara.</p>
+      </div>
+
+      <div class="footer__details">
+        <p><strong>Band:</strong> Lunara</p>
+        <p><strong>Instagram:</strong> <a href="https://www.instagram.com/bandlunara" target="_blank" rel="noopener noreferrer">@bandlunara</a></p>
+        <p><strong>Contact:</strong> <a href="tel:9502295888">9502295888</a></p>
+      </div>
+    </div>
+    <p class="footer__copyright">© 2026 Lunara</p>
+  </footer>
+
+  <!-- =====================================================
+       TOAST NOTIFICATION CONTAINER
+       script.js injects toast messages into this container.
+  ====================================================== -->
+  <div class="toast-container" id="toastContainer" aria-live="polite" aria-atomic="true"></div>
+
+  <!-- JavaScript -->
+  <script src="script.js"></script>
+</body>
+</html>
