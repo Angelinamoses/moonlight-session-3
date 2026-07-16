@@ -26,11 +26,11 @@ const RAZORPAY_KEY = "";
 
 // Deployed Google Apps Script Web App URL that receives the booking data
 // and writes it to Google Sheets (see submitRegistration() below).
-const GOOGLE_SCRIPT_URL = "";
+const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzIdhMZEbfzCp6RcUWqT1cVTuUWbh35gBVnB3NuUG9RDTnV331ZMLWDHbfvFt5A6g9e/exec";
 
 // Single source of truth for ticket price. Changing this one number
 // updates the price shown in the UI and every total calculation.
-const TICKET_PRICE = 0; // in INR — replace with real price when ready
+const TICKET_PRICE = 399; // in INR — replace with real price when ready
 
 /* -----------------------------------------------------------------------
    2. DOM ELEMENT REFERENCES
