@@ -327,46 +327,39 @@ function paymentSuccess(paymentResponse) {
    invoice/QR/email pipeline (see project notes for the full pipeline).
 ------------------------------------------------------------------------ */
 async function submitRegistration(paymentResponse) {
-  const quantity = parseInt(ticketsSelect.value, 10) || 1;
-  const amount = quantity * TICKET_PRICE;
 
-  const payload = {
-    fullName: fullNameInput.value.trim(),
-    email: emailInput.value.trim(),
-    phone: phoneInput.value.trim(),
-    tickets: quantity,
-    amount: amount,
-    paymentId: paymentResponse.razorpay_payment_id,
-    orderId: paymentResponse.razorpay_order_id,
-    signature: paymentResponse.razorpay_signature,
-    timestamp: new Date().toISOString(),
-  };
+    const quantity = parseInt(ticketsSelect.value, 10) || 1;
+    const amount = quantity * TICKET_PRICE;
 
-  try {
-    // GOOGLE_SCRIPT_URL is empty until the Apps Script backend is deployed.
-    // Guard so the demo doesn't throw a confusing network error.
-    if (!GOOGLE_SCRIPT_URL) {
-      console.log("[submitRegistration] GOOGLE_SCRIPT_URL not set. Payload that would be sent:", payload);
-      showBookingSuccess();
-      return;
+    const formURL =
+    "https://docs.google.com/forms/d/e/1FAIpQLSdMBbaCZq-8GIwWsBOdReEHBA0WajHegp3wIBA0FHJRHMdW3A/formResponse";
+
+    const formData = new FormData();
+
+    formData.append("entry.1549796671", fullNameInput.value.trim());
+    formData.append("entry.169970297", emailInput.value.trim());
+    formData.append("entry.784732075", phoneInput.value.trim());
+    formData.append("entry.519109136", quantity);
+    formData.append("entry.1535997084", amount);
+    formData.append("entry.1741527543", paymentResponse.razorpay_payment_id);
+
+    try {
+
+        await fetch(formURL, {
+            method: "POST",
+            mode: "no-cors",
+            body: formData
+        });
+
+        showBookingSuccess();
+
+    } catch (err) {
+
+        console.error(err);
+
+        showToast("Submission failed.", "error");
     }
 
-    const response = await fetch(GOOGLE_SCRIPT_URL, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(payload),
-    });
-
-    if (!response.ok) {
-      throw new Error(`Server responded with status ${response.status}`);
-    }
-
-    showBookingSuccess();
-  } catch (error) {
-    console.error("[submitRegistration] Failed to submit booking:", error);
-    showToast("Payment succeeded but booking could not be saved. Please contact support.", "error", 6000);
-    setPayButtonLoading(false);
-  }
 }
 
 
