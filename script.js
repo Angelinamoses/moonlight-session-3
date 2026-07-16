@@ -9,7 +9,7 @@
      6. Hero parallax effect
      7. Ticket price + total calculation
      8. Form validation
-     9. Payment flow 
+     9. Payment flow
      10. Submit registration to backend
      11. Success screen + "Book Another Ticket"
    ======================================================================= */
@@ -18,14 +18,13 @@
    1. CONFIGURATION PLACEHOLDERS
    These are the ONLY values you should need to touch when connecting the
    real backend / payment gateway later.
+
+   NOTE: RAZORPAY_KEY below is a LIVE key (starts with "rzp_live_"), which
+   means real payments will be charged as soon as this page goes live.
+   If you're still testing, swap in a "rzp_test_..." key from the
+   Razorpay dashboard first, then switch back to the live key at launch.
 ------------------------------------------------------------------------ */
-
-// Razorpay public "Key ID" (safe to expose on the frontend). Leave empty
-// until you have a live/test key from the Razorpay dashboard.
 const RAZORPAY_KEY = "rzp_live_TEDTCjjrNaJSqo";
-
-// Deployed Google Apps Script Web App URL that receives the booking data
-// and writes it to Google Sheets (see submitRegistration() below).
 
 // Single source of truth for ticket price. Changing this one number
 // updates the price shown in the UI and every total calculation.
@@ -243,10 +242,7 @@ phoneInput.addEventListener("blur", validatePhone);
 
 
 /* -----------------------------------------------------------------------
-   9. PAYMENT FLOW (Razorpay placeholders)
-   NOTE: Razorpay is NOT integrated yet, as requested. The functions below
-   are wired up so that dropping in the Razorpay Checkout script later
-   only requires filling in the marked sections — no structural changes.
+   9. PAYMENT FLOW (Razorpay)
 ------------------------------------------------------------------------ */
 
 // Toggles the Pay button between its normal and "processing" states.
@@ -258,86 +254,67 @@ function setPayButtonLoading(isLoading) {
 
 /**
  * startPayment()
- * Entry point for the payment flow. Currently a placeholder — in
- * production this will open Razorpay's Checkout modal using RAZORPAY_KEY
- * and the order details, then call paymentSuccess() on success.
+ * Opens Razorpay's Checkout modal using RAZORPAY_KEY and the order
+ * details, then hands off to paymentSuccess() once Razorpay confirms
+ * the payment.
  */
-
 function startPayment() {
 
-    const quantity = parseInt(ticketsSelect.value, 10) || 1;
-    const amount = quantity * TICKET_PRICE;
+  const quantity = parseInt(ticketsSelect.value, 10) || 1;
+  const amount = quantity * TICKET_PRICE;
 
-    setPayButtonLoading(true);
+  setPayButtonLoading(true);
 
-    const options = {
+  const options = {
+    key: RAZORPAY_KEY,
+    amount: amount * 100,
+    currency: "INR",
+    name: "Moonlight Session 3.0",
+    description: quantity + " Ticket(s)",
+    image: "",
 
-        key: RAZORPAY_KEY,
+    handler: async function (response) {
+      // The success screen is only ever shown from here on out — i.e.
+      // only after Razorpay has confirmed the payment and this handler
+      // has fired. It is never shown before payment.
+      await paymentSuccess(response);
+    },
 
-        amount: amount * 100,
+    prefill: {
+      name: fullNameInput.value,
+      email: emailInput.value,
+      contact: phoneInput.value
+    },
 
-        currency: "INR",
+    notes: {
+      event: "Moonlight Session 3.0"
+    },
 
-        name: "Moonlight Session 3.0",
+    theme: {
+      color: "#7C3AED"
+    },
 
-        description: quantity + " Ticket(s)",
-
-        image: "",
-
-        handler: async function(response) {
-          payButton.disabled = true; // prevent double submission
-
-            await paymentSuccess(response);
-
-        },
-
-        prefill: {
-
-            name: fullNameInput.value,
-
-            email: emailInput.value,
-
-            contact: phoneInput.value
-
-        },
-
-        notes: {
-
-            event: "Moonlight Session 3.0"
-
-        },
-
-        theme: {
-
-            color: "#7C3AED"
-
-        }
-
-    };
-    options.modal = {
-    ondismiss: function () {
+    modal: {
+      ondismiss: function () {
         setPayButtonLoading(false);
         showToast("Payment cancelled.", "info");
+      }
     }
-};
+  };
 
-    const rzp = new Razorpay(options);
+  const rzp = new Razorpay(options);
 
-    rzp.on("payment.failed", function () {
+  rzp.on("payment.failed", function () {
+    setPayButtonLoading(false);
+    showToast(
+      "Payment was cancelled or failed. No booking has been made.",
+      "error"
+    );
+  });
 
-        setPayButtonLoading(false);
-
-        showToast(
-          "Payment was cancelled or failed. No booking has been made.",
-          "error"
-        );
-
-    });
-
-    rzp.open();
-
+  rzp.open();
 }
-  // ---------------------------------------------------------------------
+
 async function paymentSuccess(paymentResponse) {
   showToast("Payment successful! Confirming your booking...", "success");
   await submitRegistration(paymentResponse);
@@ -346,80 +323,81 @@ async function paymentSuccess(paymentResponse) {
 
 /* -----------------------------------------------------------------------
    10. SUBMIT REGISTRATION TO BACKEND
-   Posts booking + payment details to the Google Apps Script Web App,
-   which is expected to log the row into Google Sheets and trigger the
-   invoice/QR/email pipeline (see project notes for the full pipeline).
+   Posts booking + payment details to the connected Google Form, which
+   logs the row into Google Sheets.
 ------------------------------------------------------------------------ */
 async function submitRegistration(paymentResponse) {
 
-    const quantity = parseInt(ticketsSelect.value, 10) || 1;
-    const amount = quantity * TICKET_PRICE;
+  const quantity = parseInt(ticketsSelect.value, 10) || 1;
+  const amount = quantity * TICKET_PRICE;
 
-    const formURL =
+  const formURL =
     "https://docs.google.com/forms/d/e/1FAIpQLSdMBbaCZq-8GIwWsBOdReEHBA0WajHegp3wIBA0FHJRHMdW3A/formResponse";
 
-    const formData = new FormData();
+  const formData = new FormData();
 
-    formData.append("entry.1549796671", fullNameInput.value.trim());
-    formData.append("entry.169970297", emailInput.value.trim());
-    formData.append("entry.784732075", phoneInput.value.trim());
-    formData.append("entry.519109136", quantity);
-    formData.append("entry.1535997084", amount);
-    formData.append("entry.1741527543", paymentResponse.razorpay_payment_id);
+  formData.append("entry.1549796671", fullNameInput.value.trim());
+  formData.append("entry.169970297", emailInput.value.trim());
+  formData.append("entry.784732075", phoneInput.value.trim());
+  formData.append("entry.519109136", quantity);
+  formData.append("entry.1535997084", amount);
+  formData.append("entry.1741527543", paymentResponse.razorpay_payment_id);
 
-    try {
+  try {
+    await fetch(formURL, {
+      method: "POST",
+      mode: "no-cors", // response is opaque in no-cors mode; we can't read status/body
+      body: formData
+    });
 
-        await fetch(formURL, {
-    method: "POST",
-    mode: "no-cors",
-    body: formData
-});
+    // Only reveal the success screen after this point — payment has been
+    // confirmed by Razorpay AND the booking has been logged.
+    setTimeout(() => {
+      showBookingSuccess();
+    }, 1500);
 
-setTimeout(() => {
-    showBookingSuccess();
-}, 1500)
-
-    } catch (err) {
-
-        console.error(err);
-
-        showToast("Submission failed.", "error");
-    }
-
+  } catch (err) {
+    console.error(err);
+    // Bug fix: previously the Pay button stayed stuck on "Processing..."
+    // forever if this request failed, since the loading state was never
+    // reset here. Now it's re-enabled so the user can retry or reach out.
+    setPayButtonLoading(false);
+    showToast(
+      "Payment succeeded but we couldn't save your booking automatically. Please contact us at 9502295888 with your payment ID.",
+      "error"
+    );
+  }
 }
 
 
 /* -----------------------------------------------------------------------
    11. SUCCESS SCREEN
+   showBookingSuccess() is the ONLY place that reveals the success screen,
+   and it is only ever called after a confirmed payment (see section 9-10
+   above). The form is hidden and the success screen replaces it.
 ------------------------------------------------------------------------ */
 function showBookingSuccess() {
-
-    registrationForm.style.display = "none";
-
-    successScreen.classList.add("show");
-
-    setPayButtonLoading(false);
-
+  registrationForm.style.display = "none";
+  successScreen.classList.add("show");
+  setPayButtonLoading(false);
 }
 
 // "Book Another Ticket" resets the form and swaps back to the booking view.
 bookAnotherBtn.addEventListener("click", () => {
 
-    registrationForm.reset();
+  registrationForm.reset();
+  updatePriceSummary();
 
-    updatePriceSummary();
+  successScreen.classList.remove("show");
+  registrationForm.style.display = "flex";
 
-    successScreen.classList.remove("show");
+  // Clear any leftover validation error states.
+  [fullNameInput, emailInput, phoneInput].forEach((input) => {
+    input.closest(".field").classList.remove("field--error");
+  });
 
-    registrationForm.style.display = "flex";
-
-    // Clear any leftover validation error states.
-    [fullNameInput, emailInput, phoneInput].forEach((input) => {
-      input.closest(".field").classList.remove("field--error");
-    });
-
-    // Scroll back to the top of the registration card for a clean restart.
-    document.getElementById("register").scrollIntoView({ behavior: "smooth" });
+  // Scroll back to the top of the registration card for a clean restart.
+  document.getElementById("register").scrollIntoView({ behavior: "smooth" });
 });
 
 

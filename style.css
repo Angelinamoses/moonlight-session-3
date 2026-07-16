@@ -674,7 +674,7 @@ select:focus-visible {
   color: var(--text-faint);
 }
 
-/* Loading spinner shown inside the Pay button while "processing" */
+/* Loading spinner shown inside the Pay button while payment is processing */
 .spinner {
   width: 18px;
   height: 18px;
@@ -688,14 +688,20 @@ select:focus-visible {
   to { transform: rotate(360deg); }
 }
 
-/* Success screen -------------------------------------------------------- */
+/* Success screen --------------------------------------------------------
+   Hidden by default. script.js adds the .show class only after payment
+   has actually succeeded (see showBookingSuccess() in script.js). */
 .success-screen {
-  display: flex;
+  display: none;
   flex-direction: column;
   align-items: center;
   text-align: center;
   gap: 0.5rem;
   padding: var(--space-md) 0;
+}
+
+.success-screen.show {
+  display: flex;
   animation: fadeInUp 0.5s var(--ease-smooth);
 }
 
@@ -882,13 +888,4 @@ select:focus-visible {
     right: var(--space-sm);
     max-width: none;
   }
-}
-.success-screen {
-    display: none !important;
-}
-
-.success-screen.show {
-    display: flex !important;
-    flex-direction: column;
-    align-items: center;
 }
