@@ -9,8 +9,8 @@
      6. Hero parallax effect
      7. Ticket price + total calculation
      8. Form validation
-     9. Payment flow (Razorpay placeholders)
-     10. Submit registration to backend (Google Apps Script placeholder)
+     9. Payment flow 
+     10. Submit registration to backend
      11. Success screen + "Book Another Ticket"
    ======================================================================= */
 
@@ -26,7 +26,6 @@ const RAZORPAY_KEY = "rzp_live_TEDTCjjrNaJSqo";
 
 // Deployed Google Apps Script Web App URL that receives the booking data
 // and writes it to Google Sheets (see submitRegistration() below).
-const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzIdhMZEbfzCp6RcUWqT1cVTuUWbh35gBVnB3NuUG9RDTnV331ZMLWDHbfvFt5A6g9e/exec";
 
 // Single source of truth for ticket price. Changing this one number
 // updates the price shown in the UI and every total calculation.
@@ -285,9 +284,10 @@ function startPayment() {
 
         image: "",
 
-        handler: function (response) {
+        handler: async function(response) {
+          payButton.disabled = true; // prevent double submission
 
-            paymentSuccess(response);
+            await paymentSuccess(response);
 
         },
 
@@ -314,6 +314,12 @@ function startPayment() {
         }
 
     };
+    options.modal = {
+    ondismiss: function () {
+        setPayButtonLoading(false);
+        showToast("Payment cancelled.", "info");
+    }
+};
 
     const rzp = new Razorpay(options);
 
@@ -321,7 +327,10 @@ function startPayment() {
 
         setPayButtonLoading(false);
 
-        showToast("Payment Failed!", "error");
+        showToast(
+          "Payment was cancelled or failed. No booking has been made.",
+          "error"
+        );
 
     });
 
@@ -329,9 +338,9 @@ function startPayment() {
 
 }
   // ---------------------------------------------------------------------
-function paymentSuccess(paymentResponse) {
+async function paymentSuccess(paymentResponse) {
   showToast("Payment successful! Confirming your booking...", "success");
-  submitRegistration(paymentResponse);
+  await submitRegistration(paymentResponse);
 }
 
 
@@ -361,12 +370,14 @@ async function submitRegistration(paymentResponse) {
     try {
 
         await fetch(formURL, {
-            method: "POST",
-            mode: "no-cors",
-            body: formData
-        });
+    method: "POST",
+    mode: "no-cors",
+    body: formData
+});
 
-        showBookingSuccess();
+setTimeout(() => {
+    showBookingSuccess();
+}, 1500)
 
     } catch (err) {
 
