@@ -22,7 +22,7 @@
 
 // Razorpay public "Key ID" (safe to expose on the frontend). Leave empty
 // until you have a live/test key from the Razorpay dashboard.
-const RAZORPAY_KEY = "";
+const RAZORPAY_KEY = "rzp_live_TEDTCjjrNaJSqo";
 
 // Deployed Google Apps Script Web App URL that receives the booking data
 // and writes it to Google Sheets (see submitRegistration() below).
@@ -263,57 +263,72 @@ function setPayButtonLoading(isLoading) {
  * production this will open Razorpay's Checkout modal using RAZORPAY_KEY
  * and the order details, then call paymentSuccess() on success.
  */
+
 function startPayment() {
-  const quantity = parseInt(ticketsSelect.value, 10) || 1;
-  const amount = quantity * TICKET_PRICE;
 
-  setPayButtonLoading(true);
+    const quantity = parseInt(ticketsSelect.value, 10) || 1;
+    const amount = quantity * TICKET_PRICE;
 
-  // ---------------------------------------------------------------------
-  // Razorpay Checkout will be initialized here.
-  //
-  // Example of what this will look like once RAZORPAY_KEY is set:
-  //
-  //   const options = {
-  //     key: RAZORPAY_KEY,
-  //     amount: amount * 100, // Razorpay expects the amount in paise
-  //     currency: "INR",
-  //     name: "Moonlight Session 3.0",
-  //     description: `${quantity} ticket(s) for Lunara live`,
-  //     handler: function (response) {
-  //       // response contains razorpay_payment_id, razorpay_order_id, razorpay_signature
-  //       paymentSuccess(response);
-  //     },
-  //     prefill: {
-  //       name: fullNameInput.value,
-  //       email: emailInput.value,
-  //       contact: phoneInput.value,
-  //     },
-  //     theme: { color: "#7C3AED" },
-  //   };
-  //   const rzp = new Razorpay(options);
-  //   rzp.open();
-  // ---------------------------------------------------------------------
+    setPayButtonLoading(true);
 
-  // TEMPORARY SIMULATION so the flow is testable before Razorpay is wired up.
-  // Remove this block once the real Checkout call above is in place.
-  showToast("Simulating payment gateway (Razorpay not yet connected)...", "info");
-  setTimeout(() => {
-    const simulatedResponse = {
-      razorpay_payment_id: "pay_SIMULATED_" + Date.now(),
-      razorpay_order_id: "order_SIMULATED_" + Date.now(),
-      razorpay_signature: "signature_SIMULATED",
+    const options = {
+
+        key: RAZORPAY_KEY,
+
+        amount: amount * 100,
+
+        currency: "INR",
+
+        name: "Moonlight Session 3.0",
+
+        description: quantity + " Ticket(s)",
+
+        image: "",
+
+        handler: function (response) {
+
+            paymentSuccess(response);
+
+        },
+
+        prefill: {
+
+            name: fullNameInput.value,
+
+            email: emailInput.value,
+
+            contact: phoneInput.value
+
+        },
+
+        notes: {
+
+            event: "Moonlight Session 3.0"
+
+        },
+
+        theme: {
+
+            color: "#7C3AED"
+
+        }
+
     };
-    paymentSuccess(simulatedResponse);
-  }, 1800);
-}
 
-/**
- * paymentSuccess(paymentResponse)
- * Called automatically once Razorpay confirms a successful payment.
- * Immediately hands off to submitRegistration() — no extra confirmation
- * step from the user is required.
- */
+    const rzp = new Razorpay(options);
+
+    rzp.on("payment.failed", function () {
+
+        setPayButtonLoading(false);
+
+        showToast("Payment Failed!", "error");
+
+    });
+
+    rzp.open();
+
+}
+  // ---------------------------------------------------------------------
 function paymentSuccess(paymentResponse) {
   showToast("Payment successful! Confirming your booking...", "success");
   submitRegistration(paymentResponse);
