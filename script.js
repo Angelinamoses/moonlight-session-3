@@ -393,25 +393,33 @@ setTimeout(() => {
    11. SUCCESS SCREEN
 ------------------------------------------------------------------------ */
 function showBookingSuccess() {
-  registrationForm.hidden = true;
-  successScreen.hidden = false;
-  setPayButtonLoading(false); // reset button state for next time
+
+    registrationForm.style.display = "none";
+
+    successScreen.classList.add("show");
+
+    setPayButtonLoading(false);
+
 }
 
 // "Book Another Ticket" resets the form and swaps back to the booking view.
 bookAnotherBtn.addEventListener("click", () => {
-  registrationForm.reset();
-  updatePriceSummary();
-  successScreen.hidden = true;
-  registrationForm.hidden = false;
 
-  // Clear any leftover validation error states.
-  [fullNameInput, emailInput, phoneInput].forEach((input) => {
-    input.closest(".field").classList.remove("field--error");
-  });
+    registrationForm.reset();
 
-  // Scroll back to the top of the registration card for a clean restart.
-  document.getElementById("register").scrollIntoView({ behavior: "smooth" });
+    updatePriceSummary();
+
+    successScreen.classList.remove("show");
+
+    registrationForm.style.display = "flex";
+
+    // Clear any leftover validation error states.
+    [fullNameInput, emailInput, phoneInput].forEach((input) => {
+      input.closest(".field").classList.remove("field--error");
+    });
+
+    // Scroll back to the top of the registration card for a clean restart.
+    document.getElementById("register").scrollIntoView({ behavior: "smooth" });
 });
 
 

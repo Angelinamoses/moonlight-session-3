@@ -883,3 +883,12 @@ select:focus-visible {
     max-width: none;
   }
 }
+.success-screen {
+    display: none !important;
+}
+
+.success-screen.show {
+    display: flex !important;
+    flex-direction: column;
+    align-items: center;
+}
